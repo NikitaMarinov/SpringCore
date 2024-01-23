@@ -3,37 +3,42 @@ package com.core.service.ServiceImpl;
 import com.core.DAO.DAOImpl.OrderDAO;
 import com.core.domain.OrderEntity;
 import com.core.service.OrderService;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+
+@Data
+@NoArgsConstructor
 public class OrderServiceImpl implements OrderService {
-    private final OrderDAO ORDER_DAO;
-    
+    private OrderDAO orderDAO;
+
     public OrderServiceImpl(OrderDAO orderDAO){
-        this.ORDER_DAO = orderDAO;
+        this.orderDAO = orderDAO;
     } 
     @Override
     public OrderEntity findOrderById(Long id) {
-        return ORDER_DAO.findById(id).orElse(null);
+        return orderDAO.findById(id).orElse(null);
     }
 
     @Override
     public List<OrderEntity> findAllOrderGroups() {
-        return ORDER_DAO.findAll().orElse(null);
+        return orderDAO.findAll().orElse(null);
     }
 
     @Override
     public OrderEntity createOrderGroup(OrderEntity orderEntity) {
-            return ORDER_DAO.save(orderEntity).orElse(null);
+            return orderDAO.save(orderEntity).orElse(null);
     }
 
     @Override
     public OrderEntity updateOrderGroup(OrderEntity orderEntity) {
-        return ORDER_DAO.update(orderEntity).orElse(null);
+        return orderDAO.update(orderEntity).orElse(null);
     }
 
     @Override
     public void deleteOrder(Long id) {
-        ORDER_DAO.delete(id);
+        orderDAO.delete(id);
     }
 }

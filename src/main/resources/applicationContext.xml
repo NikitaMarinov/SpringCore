@@ -38,7 +38,7 @@
     </bean>
 
     <bean id="orderService" class="com.core.service.ServiceImpl.OrderServiceImpl">
-        <constructor-arg ref="orderDAO"/>
+        <property name="orderDAO" ref="orderDAO"/>
     </bean>
 
     <bean id="stockService" class="com.core.service.ServiceImpl.StockServiceImpl">
