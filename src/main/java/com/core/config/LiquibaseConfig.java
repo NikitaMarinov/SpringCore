@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.slf4j.Logger;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
 @Slf4j
 public class LiquibaseConfig {
 

@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.List;
 
+import com.core.config.ApplicationContextConfig;
 import com.core.constants.Constants;
 import com.core.domain.enums.MinerStatusEnum;
 import com.core.domain.enums.OrderStatusEnum;
@@ -23,6 +24,7 @@ import com.core.domain.MinerGroupEntity;
 import com.core.domain.OrderEntity;
 import com.core.domain.StockEntity;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
@@ -30,7 +32,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Main {
     public static void main(String[] args) {
 
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ApplicationContextConfig.class);
         HibernateUtil hibernateUtil = applicationContext.getBean(HibernateUtil.class);
         LiquibaseConfig liquibaseConfig = applicationContext.getBean(LiquibaseConfig.class);
 

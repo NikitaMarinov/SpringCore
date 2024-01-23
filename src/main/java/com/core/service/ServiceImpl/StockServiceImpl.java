@@ -3,9 +3,12 @@ package com.core.service.ServiceImpl;
 import com.core.DAO.DAOImpl.StockDAO;
 import com.core.domain.StockEntity;
 import com.core.service.StockService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
+@Slf4j
 public class StockServiceImpl implements StockService {
     public final StockDAO STOCK_DAO;
     public StockServiceImpl(StockDAO stockDAO) {

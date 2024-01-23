@@ -4,6 +4,8 @@ import com.core.DAO.DAOGeneric;
 import com.core.config.HibernateUtil;
 import com.core.domain.MinerEntity;
 import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Transient;
+import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -12,20 +14,25 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 
+@Repository
+@Transactional
 @NoArgsConstructor
 public class MinerDAO implements DAOGeneric<MinerEntity, Long> {
     private Logger log = LoggerFactory.getLogger(MinerDAO.class);
     private SessionFactory sessionFactory;
 
-
-    public MinerDAO(HibernateUtil hibernateUtil){
+    @Autowired
+    public MinerDAO(HibernateUtil hibernateUtil) {
         sessionFactory = hibernateUtil.getSessionFactory();
     }
+
     public MinerDAO(Logger log, SessionFactory sessionFactory) {
         this.log = log;
         this.sessionFactory = sessionFactory;
@@ -41,7 +48,7 @@ public class MinerDAO implements DAOGeneric<MinerEntity, Long> {
             log.error("Error while finding Miner by ID: {}", minerId);
         }
 
-        if(miner.isEmpty()){
+        if (miner.isEmpty()) {
             log.error("The miner with id {} didn't find!", minerId);
         }
 
@@ -92,7 +99,7 @@ public class MinerDAO implements DAOGeneric<MinerEntity, Long> {
             try {
                 transaction = session.beginTransaction();
 
-                if(findById(miner.getId()).isEmpty()){
+                if (findById(miner.getId()).isEmpty()) {
                     log.error("Miner with this id doesn't exists!");
                 }
                 savedMiner = session.merge(miner);
@@ -130,7 +137,7 @@ public class MinerDAO implements DAOGeneric<MinerEntity, Long> {
             } catch (HibernateException e) {
                 log.error("Error when deleting miner!", e);
             }
-        } catch (HibernateException e){
+        } catch (HibernateException e) {
             log.error("Error when opening session!", e);
         }
     }

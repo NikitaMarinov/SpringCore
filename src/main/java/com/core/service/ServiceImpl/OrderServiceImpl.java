@@ -5,10 +5,13 @@ import com.core.domain.OrderEntity;
 import com.core.service.OrderService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
+@Service
+@Slf4j
 @Data
 @NoArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -16,7 +19,7 @@ public class OrderServiceImpl implements OrderService {
 
     public OrderServiceImpl(OrderDAO orderDAO){
         this.orderDAO = orderDAO;
-    } 
+    }
     @Override
     public OrderEntity findOrderById(Long id) {
         return orderDAO.findById(id).orElse(null);
@@ -29,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderEntity createOrderGroup(OrderEntity orderEntity) {
-            return orderDAO.save(orderEntity).orElse(null);
+        return orderDAO.save(orderEntity).orElse(null);
     }
 
     @Override
@@ -42,3 +45,4 @@ public class OrderServiceImpl implements OrderService {
         orderDAO.delete(id);
     }
 }
+

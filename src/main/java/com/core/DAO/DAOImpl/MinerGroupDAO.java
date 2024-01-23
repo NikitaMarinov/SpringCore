@@ -11,21 +11,25 @@ import org.hibernate.*;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Transactional
+@Repository
 @NoArgsConstructor
 public class MinerGroupDAO implements DAOGeneric<MinerGroupEntity, Long> {
     private Logger log = LoggerFactory.getLogger(MinerDAO.class);
 
     private SessionFactory sessionFactory;
 
-
-    public MinerGroupDAO(HibernateUtil hibernateUtil){
+    @Autowired
+    public MinerGroupDAO(HibernateUtil hibernateUtil) {
         sessionFactory = hibernateUtil.getSessionFactory();
     }
+
     public MinerGroupDAO(Logger log, SessionFactory sessionFactory) {
         this.log = log;
         this.sessionFactory = sessionFactory;
@@ -166,3 +170,4 @@ public class MinerGroupDAO implements DAOGeneric<MinerGroupEntity, Long> {
         }
     }
 }
+

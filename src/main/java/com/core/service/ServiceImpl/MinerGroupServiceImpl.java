@@ -2,11 +2,15 @@ package com.core.service.ServiceImpl;
 
 import java.util.List;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.core.domain.MinerGroupEntity;
 import com.core.service.MinerGroupService;
 import com.core.DAO.DAOImpl.MinerGroupDAO;
+import org.springframework.stereotype.Service;
+
+@Service
 @Slf4j
 public class MinerGroupServiceImpl implements MinerGroupService {
     private final MinerGroupDAO MINER_GROUP_DAO;
