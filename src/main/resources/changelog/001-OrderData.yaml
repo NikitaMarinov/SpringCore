@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-1
+      author: Bars
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: type_of_ore
+                  type: VARCHAR(255)
+              - column:
+                  name: quantity
+                  type: INTEGER
+              - column:
+                  name: price
+                  type: INTEGER
+              - column:
+                  name: order_status
+                  type: VARCHAR(255)
+        - sql:
+            sql: "ALTER SEQUENCE orders_id_seq RESTART WITH 14"
+        - loadData:
+            file: "static/order.csv"
+            separator: ","
+            tableName: "orders"
+            columns:
+              - column: "id"
+              - column: "type_of_ore"
+              - column: "quantity"
+              - column: "price"
+              - column: "order_status"

@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-1
+      author: Bars
+      changes:
+        - createTable:
+            tableName: miner
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: surname
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: salary
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: at_work
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(255)
+              - column:
+                  name: miner_group_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_miner_group_id
+                    references: miner_group(id)
+        - sql:
+            sql: "ALTER SEQUENCE miner_id_seq RESTART WITH 31"
+
+        - loadData:
+            file: "static/miner.csv"
+            separator: ","
+            tableName: "miner"
+            columns:
+              - column: "id"
+              - column: "name"
+              - column: "surname"
+              - column: "salary"
+              - column: "at_work"
+              - column: "status"
+              - column: "miner_group_id"
+

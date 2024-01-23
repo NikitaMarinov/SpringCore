@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-1
+      author: Bars
+      changes:
+        - createTable:
+            tableName: stock
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: COAL
+                  type: INTEGER
+              - column:
+                  name: IRON
+                  type: INTEGER
+              - column:
+                  name: GOLD
+                  type: INTEGER
+        - sql:
+            sql: "ALTER SEQUENCE stock_id_seq RESTART WITH 7"
+
+        - loadData:
+            file: "static/stock.csv"
+            separator: ","
+            tableName: "stock"
+            columns:
+              - column: "id"
+              - column: "coal"
+              - column: "iron"
+              - column: "gold"
+
+
+

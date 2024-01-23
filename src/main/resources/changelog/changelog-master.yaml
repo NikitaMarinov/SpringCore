@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: changelog/003-Stock.yaml
+      relativeToChangelogFile: false
+  - include:
+      file: changelog/001-OrderData.yaml
+      relativeToChangelogFile: false
+  - include:
+      file: changelog/002-MinerGroup.yaml
+      relativeToChangelogFile: false
+  - include:
+      file: changelog/004-Miner.yaml
+      relativeToChangelogFile: false
