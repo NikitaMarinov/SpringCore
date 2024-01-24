@@ -6,9 +6,11 @@ import com.core.service.OrderService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -17,6 +19,7 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
     private OrderDAO orderDAO;
 
+    @Autowired
     public OrderServiceImpl(OrderDAO orderDAO){
         this.orderDAO = orderDAO;
     }
@@ -43,6 +46,18 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrder(Long id) {
         orderDAO.delete(id);
+    }
+
+    @Override
+    public Optional<OrderEntity> checkIfOrderExist(long id) {
+        return orderDAO.findById(id);
+    }
+
+    @Override
+    public void saveAllOrders(List<OrderEntity> ordersList) {
+        for(OrderEntity orderEntity : ordersList) {
+            orderDAO.save(orderEntity);
+        }
     }
 }
 

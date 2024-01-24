@@ -167,4 +167,8 @@ public class OrderDAO implements DAOGeneric<OrderEntity, Long> {
             log.error("Failed to delete order from miner group", e);
         }
     }
+
+
+
+
 }

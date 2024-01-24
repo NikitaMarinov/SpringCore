@@ -24,15 +24,15 @@ databaseChangeLog:
               - column:
                   name: order_status
                   type: VARCHAR(255)
-        - sql:
-            sql: "ALTER SEQUENCE orders_id_seq RESTART WITH 14"
-        - loadData:
-            file: "static/order.csv"
-            separator: ","
-            tableName: "orders"
-            columns:
-              - column: "id"
-              - column: "type_of_ore"
-              - column: "quantity"
-              - column: "price"
-              - column: "order_status"
+#        - sql:
+#            sql: "ALTER SEQUENCE orders_id_seq RESTART WITH 14"
+#        - loadData:
+#            file: "static/order.csv"
+#            separator: ","
+#            tableName: "orders"
+#            columns:
+#              - column: "id"
+#              - column: "type_of_ore"
+#              - column: "quantity"
+#              - column: "price"
+#              - column: "order_status"

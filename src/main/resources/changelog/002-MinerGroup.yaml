@@ -37,19 +37,19 @@ databaseChangeLog:
                     references: stock(id)
                     nullable: true
                     onDelete: SET NULL
-        - sql:
-            sql: "ALTER SEQUENCE miner_group_id_seq RESTART WITH 7"
-
-        - loadData:
-            file: "static/minerGroup.csv"
-            separator: ","
-            tableName: "miner_group"
-            columns:
-              - column: "id"
-              - column: "name"
-              - column: "productivity"
-              - column: "mine_ore"
-              - column: "order_id"
+#        - sql:
+#            sql: "ALTER SEQUENCE miner_group_id_seq RESTART WITH 7"
+#
+#        - loadData:
+#            file: "static/minerGroup.csv"
+#            separator: ","
+#            tableName: "miner_group"
+#            columns:
+#              - column: "id"
+#              - column: "name"
+#              - column: "productivity"
+#              - column: "mine_ore"
+#              - column: "order_id"
 
 
 

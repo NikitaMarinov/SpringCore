@@ -47,6 +47,7 @@ public class Constants {
         System.out.println("2 - ORDER ENTITY");
         System.out.println("3 - STOCK ENTITY");
         System.out.println("4 - MINER GROUP ENTITY");
+        System.out.println("5 - !!! LOAD DATA !!!");
     }
 
     public static void mainerChangeMenuOutput(){

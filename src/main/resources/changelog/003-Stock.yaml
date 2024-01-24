@@ -21,18 +21,18 @@ databaseChangeLog:
               - column:
                   name: GOLD
                   type: INTEGER
-        - sql:
-            sql: "ALTER SEQUENCE stock_id_seq RESTART WITH 7"
-
-        - loadData:
-            file: "static/stock.csv"
-            separator: ","
-            tableName: "stock"
-            columns:
-              - column: "id"
-              - column: "coal"
-              - column: "iron"
-              - column: "gold"
+#        - sql:
+#            sql: "ALTER SEQUENCE stock_id_seq RESTART WITH 7"
+#
+#        - loadData:
+#            file: "static/stock.csv"
+#            separator: ","
+#            tableName: "stock"
+#            columns:
+#              - column: "id"
+#              - column: "coal"
+#              - column: "iron"
+#              - column: "gold"
 
 
 

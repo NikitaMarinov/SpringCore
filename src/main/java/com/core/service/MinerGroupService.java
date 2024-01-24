@@ -11,4 +11,7 @@ public interface MinerGroupService {
     MinerGroupEntity createMinerGroup(MinerGroupEntity minerGroup);
     MinerGroupEntity updateMinerGroup(MinerGroupEntity minerGroup);
     void deleteMinerGroup(Long id);
+    Optional<MinerGroupEntity> checkIfMinerGroupExist(long id);
+    void saveAllMinerGroups(List<MinerGroupEntity> minerGroups);
+
 }

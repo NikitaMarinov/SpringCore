@@ -4,6 +4,7 @@ import com.core.DAO.DAOImpl.MinerDAO;
 import com.core.domain.MinerEntity;
 import com.core.service.MinerService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 @Slf4j
 public class MinerServiceImpl implements MinerService {
     private final MinerDAO MINER_DAO;
-
+    @Autowired
     public MinerServiceImpl(MinerDAO minerDAO) {
         this.MINER_DAO = minerDAO;
     }
@@ -38,5 +39,12 @@ public class MinerServiceImpl implements MinerService {
     @Override
     public void deleteMiner(Long id) {
         MINER_DAO.delete(id);
+    }
+
+    @Override
+    public void saveAllMiners(List<MinerEntity> miners) {
+        for(MinerEntity miner : miners){
+            MINER_DAO.save(miner);
+        }
     }
 }
