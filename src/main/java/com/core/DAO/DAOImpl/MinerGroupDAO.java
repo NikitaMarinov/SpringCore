@@ -17,7 +17,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Transactional
 @Repository
 @NoArgsConstructor
 public class MinerGroupDAO implements DAOGeneric<MinerGroupEntity, Long> {

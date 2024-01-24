@@ -22,7 +22,6 @@ import java.util.Optional;
 
 @Repository
 @NoArgsConstructor
-@Transactional
 public class StockDAO implements DAOGeneric<StockEntity, Long> {
     private  SessionFactory sessionFactory;
     private Logger log = LoggerFactory.getLogger(MinerDAO.class);

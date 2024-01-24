@@ -8,6 +8,7 @@ import com.core.service.*;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -30,7 +31,7 @@ public class CsvReadeServiceImpl implements CsvReadeService {
     @Autowired
     public CsvReadeServiceImpl(OrderServiceImpl orderService, MinerGroupServiceImpl minerGroupService,
                                StockServiceImpl stockService, MinerServiceImpl minerService,
-                               ValidationServiceImpl validationService) {
+                               ValidationService validationService) {
         ORDER_SERVICE = orderService;
         MINER_GROUP_SERVICE = minerGroupService;
         STOCK_SERVICE = stockService;

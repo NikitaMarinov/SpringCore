@@ -27,15 +27,14 @@ public class MinerServiceImpl implements MinerService {
     }
 
     @Override
-    public MinerEntity createMinerGroup(MinerEntity minerEntity) {
+    public MinerEntity createMiner(MinerEntity minerEntity) {
         return MINER_DAO.save(minerEntity).orElse(null);
     }
 
     @Override
-    public MinerEntity updateMinerGroup(MinerEntity minerEntity) {
+    public MinerEntity updateMiner(MinerEntity minerEntity) {
         return MINER_DAO.update(minerEntity).orElse(null);
     }
-
     @Override
     public void deleteMiner(Long id) {
         MINER_DAO.delete(id);

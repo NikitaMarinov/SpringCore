@@ -7,8 +7,8 @@ import java.util.List;
 public interface MinerService {
     MinerEntity findMinerById(Long id);
     List<MinerEntity> findAllMinerGroups();
-    MinerEntity createMinerGroup(MinerEntity minerGroup);
-    MinerEntity updateMinerGroup(MinerEntity minerGroup);
+    MinerEntity createMiner(MinerEntity minerGroup);
+    MinerEntity updateMiner(MinerEntity minerGroup);
     void deleteMiner(Long id);
     void saveAllMiners(List<MinerEntity> miners);
 

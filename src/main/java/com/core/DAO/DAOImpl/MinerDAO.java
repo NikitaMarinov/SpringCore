@@ -22,7 +22,6 @@ import java.util.Optional;
 
 
 @Repository
-@Transactional
 @NoArgsConstructor
 public class MinerDAO implements DAOGeneric<MinerEntity, Long> {
     private Logger log = LoggerFactory.getLogger(MinerDAO.class);

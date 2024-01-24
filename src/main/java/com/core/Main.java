@@ -34,11 +34,11 @@ public class Main {
             liquibaseConfig.configureLiquibase(session);
         }
 
-        MinerGroupService minerGroupService = applicationContext.getBean(MinerGroupServiceImpl.class);
-        MinerService minerService = applicationContext.getBean(MinerServiceImpl.class);
-        StockService stockService = applicationContext.getBean(StockServiceImpl.class);
-        OrderService orderService = applicationContext.getBean(OrderServiceImpl.class);
-        CsvReadeService csvReadeService= applicationContext.getBean(CsvReadeServiceImpl.class);
+        MinerGroupService minerGroupService = applicationContext.getBean(MinerGroupService.class);
+        MinerService minerService = applicationContext.getBean(MinerService.class);
+        StockService stockService = applicationContext.getBean(StockService.class);
+        OrderService orderService = applicationContext.getBean(OrderService.class);
+        CsvReadeService csvReadeService= applicationContext.getBean(CsvReadeService.class);
 
         Scanner scanner = new Scanner(System.in);
 
@@ -116,7 +116,7 @@ public class Main {
 
                                 } while (minerGroupEntity == null);
 
-                                minerService.createMinerGroup(new MinerEntity()
+                                minerService.createMiner(new MinerEntity()
                                         .setName(name)
                                         .setSurname(surname)
                                         .setSalary(salary)
@@ -219,7 +219,7 @@ public class Main {
                                         }
                                     }
                                 } while (changedField != 0);
-                                minerService.createMinerGroup(miner);
+                                minerService.updateMiner(miner);
                             }
                             case 3 -> {
                                 System.out.print("Enter miner ID for deletion:");

@@ -1,5 +1,6 @@
 package com.core.service.ServiceImpl;
 
+import com.core.annotations.ValidMiner;
 import com.core.domain.MinerEntity;
 import com.core.domain.MinerGroupEntity;
 import com.core.domain.OrderEntity;
@@ -11,18 +12,19 @@ import com.core.service.MinerGroupService;
 import com.core.service.OrderService;
 import com.core.service.StockService;
 import com.core.service.ValidationService;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 @Slf4j
+@NoArgsConstructor
 @Service
 public class ValidationServiceImpl implements ValidationService {
-    private final MinerGroupService MINER_GROUP_SERVICE;
-    private final StockService STOCK_SERVICE;
-    private final OrderService ORDER_SERVICE;
+    private MinerGroupService MINER_GROUP_SERVICE;
+    private StockService STOCK_SERVICE;
+    private OrderService ORDER_SERVICE;
     private  final int MAX_VALUE = 1000000000;
     private  final int MIN_VALUE = 0;
 
@@ -33,115 +35,77 @@ public class ValidationServiceImpl implements ValidationService {
         STOCK_SERVICE = stockService;
     }
 
-    public  Optional<MinerEntity> createMinerEntity(String[] minerValues){
-        Optional<Long> minerId = validateLong(getCSVValue(minerValues, 0), "Miner Id");
-        Optional<String> name = validateStringWithRegex(getCSVValue(minerValues, 1), "Miner name");
-        Optional<String> surname = validateStringWithRegex(getCSVValue(minerValues, 2), "Miner surname");
-        Optional<Integer> salary = validateInt(getCSVValue(minerValues, 3), "Miner salary");
-        Optional<Long> minerGroupId = validateLong(getCSVValue(minerValues, 6), "Miner group id");
-        Optional<Boolean> atWork = parseBooleanValue(getCSVValue(minerValues, 4));
-        Optional<MinerStatusEnum> mineStatus = parseEnumValue(getCSVValue(minerValues, 5), MinerStatusEnum.class);
+    @ValidMiner
+    @Override
+    public  Optional<MinerEntity> createMinerEntity(Object[] minerValues){
 
-        if (minerId.isEmpty() || name.isEmpty() || surname.isEmpty() || salary.isEmpty() ||
-                minerGroupId.isEmpty() || mineStatus.isEmpty() || atWork.isEmpty()) {
-            return Optional.empty();
-        }
 
-        Optional<MinerGroupEntity> minerGroup = MINER_GROUP_SERVICE.checkIfMinerGroupExist(minerGroupId.get());
+        Optional<MinerGroupEntity> minerGroup = MINER_GROUP_SERVICE.checkIfMinerGroupExist((Long) minerValues[6]);
         if (minerGroup.isEmpty()) {
-            log.error("The Stock with ID " + minerGroupId + " doesn't exist, we can't add Miner Group");
+            log.error("The Stock with ID " +  minerValues[5] + " doesn't exist, we can't add Miner Group");
 
             return Optional.empty();
         }
 
         return Optional.of(new MinerEntity()
-                .setId(minerId.get())
-                .setName(name.get())
-                .setSurname(surname.get())
-                .setSalary(salary.get())
-                .setAtWork(atWork.get())
-                .setStatus(mineStatus.get())
+                .setId((Long) minerValues[0])
+                .setName((String) minerValues[1])
+                .setSurname((String) minerValues[2])
+                .setSalary((Integer)minerValues[3])
+                .setAtWork((Boolean) minerValues[4])
+                .setStatus((MinerStatusEnum) minerValues[5])
                 .setMinerGroup(minerGroup.get()));
     }
 
-
-    public  Optional<MinerGroupEntity> createMinerGroupEntity(String[] minerGroupValues) {
-        Optional<Long> minerGroupId = validateLong(getCSVValue(minerGroupValues, 0), "Miner group Id");
-        Optional<String> name = validateStringWithRegex(getCSVValue(minerGroupValues, 1), "Miner group name");
-        Optional<Integer> productivity = validateInt(getCSVValue(minerGroupValues, 2), "Miner group productivity");
-        Optional<Long> orderId = validateLong(getCSVValue(minerGroupValues, 4), "Miner group orderId");
-        Optional<Long> stockId = validateLong(getCSVValue(minerGroupValues, 5), "Miner group stockId");
-        Optional<TypeOfOreEnum> mineOre = parseEnumValue(getCSVValue(minerGroupValues,3),TypeOfOreEnum.class);
-
-        if (minerGroupId.isEmpty() || name.isEmpty() || productivity.isEmpty() ||
-                orderId.isEmpty() || stockId.isEmpty() || mineOre.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Optional<StockEntity> stock = STOCK_SERVICE.checkIfStockExist(stockId.get());
+    @Override
+    public  Optional<MinerGroupEntity>  createMinerGroupEntity(Object[] minerGroupValues) {
+        Optional<StockEntity> stock = STOCK_SERVICE.checkIfStockExist((Long) minerGroupValues[5]);
         if(stock.isEmpty()) {
-            log.error("The Stock with ID" + stockId.get() + " doesn't exist, we can't add Miner Group");
-
+            log.error("The Stock with ID" + minerGroupValues[5] + " doesn't exist, we can't add Miner Group");
             return Optional.empty();
         }
-        Optional<OrderEntity> order = ORDER_SERVICE.checkIfOrderExist(orderId.get());
+        Optional<OrderEntity> order = ORDER_SERVICE.checkIfOrderExist((Long) minerGroupValues[4]);
         if(order.isEmpty()) {
-            log.error("The Order with ID" + orderId.get() + " doesn't exist, we can't add Miner Group");
+            log.error("The Order with ID" + minerGroupValues[5] + " doesn't exist, we can't add Miner Group");
 
             return Optional.empty();
         }
 
 
         return Optional.of(new MinerGroupEntity()
-                .setId(minerGroupId.get())
-                .setName(name.get())
-                .setProductivity(productivity.get())
-                .setMineOre(mineOre.get())
+                .setId((Long) minerGroupValues[0])
+                .setName((String) minerGroupValues[1])
+                .setProductivity((Integer) minerGroupValues[2])
+                .setMineOre((TypeOfOreEnum) minerGroupValues[3])
                 .setStock(stock.get())
                 .setOrder(order.get()));
     }
-
-    public  Optional<StockEntity> createStockEntity(String[] stockValues) {
-        Optional<Long> stockId = validateLong(getCSVValue(stockValues, 0), "Stock ID");
-        Optional<Integer> coal = validateInt(getCSVValue(stockValues, 1), "Stock coal");
-        Optional<Integer> iron = validateInt(getCSVValue(stockValues, 2), "Stock iron");
-        Optional<Integer> gold = validateInt(getCSVValue(stockValues, 3), "Stock gold");
-
-        if (coal.isEmpty() || iron.isEmpty() || gold.isEmpty() || stockId.isEmpty()) {
-            return Optional.empty();
-        }
+    @Override
+    public  Optional<StockEntity> createStockEntity(Object[] stockValues) {
 
         return Optional.of(new StockEntity()
-                .setId(stockId.get())
-                .setCoal(coal.get())
-                .setIron(iron.get())
-                .setGold(gold.get()));
+                .setId((Long) stockValues[0])
+                .setCoal((Integer) stockValues[1])
+                .setIron((Integer) stockValues[2])
+                .setGold((Integer) stockValues[3]));
     }
+    @Override
+    public  Optional<OrderEntity> createOrderEntity(Object[] orderValues) {
 
-    public  Optional<OrderEntity> createOrderEntity(String[] orderValues) {
-        Optional<Long> orderId = validateLong(getCSVValue(orderValues, 0), "Order ID");
-        Optional<TypeOfOreEnum> typeOfOre = parseEnumValue(getCSVValue(orderValues, 1),TypeOfOreEnum.class);
-        Optional<Integer> quantity = validateInt(getCSVValue(orderValues, 2), "Order quantity");
-        Optional<Integer> price = validateInt(getCSVValue(orderValues, 3), "Order price");
-        Optional<OrderStatusEnum> orderStatus = parseEnumValue(getCSVValue(orderValues, 4), OrderStatusEnum.class);
-
-        if (orderId.isEmpty() || quantity.isEmpty() || price.isEmpty() || typeOfOre.isEmpty() || orderStatus.isEmpty()) {
-            return Optional.empty();
-        }
 
         return Optional.of(new OrderEntity()
-                .setId(orderId.orElseThrow())
-                .setTypeOfOre(typeOfOre.get())
-                .setQuantity(quantity.orElseThrow())
-                .setPrice(price.orElseThrow())
-                .setOrderStatus(orderStatus.get()));
+                .setId((Long) orderValues[0])
+                .setTypeOfOre((TypeOfOreEnum) orderValues[1])
+                .setQuantity((Integer) orderValues[2])
+                .setPrice((Integer) orderValues[3])
+                .setOrderStatus((OrderStatusEnum) orderValues[4]));
     }
-
-    private  String getCSVValue(String[] values, int index) {
+    @Override
+    public  String getCSVValue(String[] values, int index) {
         return values[index].trim();
     }
-
-    private  Optional<Long> validateLong(String value, String fieldName) {
+    @Override
+    public  Optional<Long> validateLong(String value, String fieldName) {
         try {
             long longValue = Long.parseLong(value);
             if (longValue < MIN_VALUE || longValue > MAX_VALUE) {
@@ -157,7 +121,8 @@ public class ValidationServiceImpl implements ValidationService {
         }
     }
 
-     private  Optional<Integer> validateInt(String value, String fieldName) {
+    @Override
+    public  Optional<Integer> validateInt(String value, String fieldName) {
         try {
             int intValue = Integer.parseInt(value);
             if (intValue < MIN_VALUE || intValue > MAX_VALUE) {
@@ -174,8 +139,8 @@ public class ValidationServiceImpl implements ValidationService {
         }
     }
 
-
-    private  Optional<String> validateStringWithRegex(String value, String fieldName) {
+    @Override
+    public  Optional<String> validateStringWithRegex(String value, String fieldName) {
         if (value == null || value.trim().isEmpty()) {
             log.error("{} should not be empty or null", fieldName);
 
@@ -201,8 +166,8 @@ public class ValidationServiceImpl implements ValidationService {
         return Optional.of(value.trim());
     }
 
-
-    private <T extends Enum<T>> Optional<T> parseEnumValue(String value, Class<T> enumType) {
+    @Override
+    public <T extends Enum<T>> Optional<T> parseEnumValue(String value, Class<T> enumType) {
         try {
             return Optional.of(Enum.valueOf(enumType, value));
         } catch (IllegalArgumentException e) {
@@ -212,7 +177,8 @@ public class ValidationServiceImpl implements ValidationService {
         }
     }
 
-    private Optional<Boolean> parseBooleanValue(String value) {
+    @Override
+    public Optional<Boolean> parseBooleanValue(String value) {
         try {
             return Optional.of(Boolean.parseBoolean(value));
         } catch (IllegalArgumentException e) {
