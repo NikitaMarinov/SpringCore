@@ -1,37 +1,33 @@
 package com.core;
 
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.List;
-
 import com.core.config.ApplicationContextConfig;
-import com.core.constants.Constants;
-import com.core.domain.enums.MinerStatusEnum;
-import com.core.domain.enums.OrderStatusEnum;
-import com.core.domain.enums.TypeOfOreEnum;
-import lombok.extern.slf4j.Slf4j;
-
-import org.hibernate.Session;
-
-import com.core.DAO.DAOImpl.MinerDAO;
-import com.core.DAO.DAOImpl.MinerGroupDAO;
-import com.core.DAO.DAOImpl.OrderDAO;
-import com.core.DAO.DAOImpl.StockDAO;
 import com.core.config.HibernateUtil;
 import com.core.config.LiquibaseConfig;
+import com.core.constants.Constants;
 import com.core.domain.MinerEntity;
 import com.core.domain.MinerGroupEntity;
 import com.core.domain.OrderEntity;
 import com.core.domain.StockEntity;
+import com.core.domain.enums.MinerStatusEnum;
+import com.core.domain.enums.OrderStatusEnum;
+import com.core.domain.enums.TypeOfOreEnum;
+import com.core.service.*;
+import com.core.service.ServiceImpl.*;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Session;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.List;
+import java.util.Scanner;
 
 
 @Slf4j
 public class Main {
     public static void main(String[] args) {
-        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ApplicationContextConfig.class);
 
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ApplicationContextConfig.class);
         HibernateUtil hibernateUtil = applicationContext.getBean(HibernateUtil.class);
         LiquibaseConfig liquibaseConfig = applicationContext.getBean(LiquibaseConfig.class);
 
@@ -39,10 +35,10 @@ public class Main {
             liquibaseConfig.configureLiquibase(session);
         }
 
-        MinerGroupDAO minerGroupDAO = applicationContext.getBean(MinerGroupDAO.class);
-        MinerDAO minerDAO = applicationContext.getBean(MinerDAO.class);
-        StockDAO stockDAO = applicationContext.getBean(StockDAO.class);
-        OrderDAO orderDAO = applicationContext.getBean(OrderDAO.class);
+        MinerGroupService minerGroupService = applicationContext.getBean(MinerGroupServiceImpl.class);
+        MinerService minerService = applicationContext.getBean(MinerServiceImpl.class);
+        StockService stockService = applicationContext.getBean(StockServiceImpl.class);
+        OrderService orderService = applicationContext.getBean(OrderServiceImpl.class);
 
         Scanner scanner = new Scanner(System.in);
 
@@ -52,9 +48,9 @@ public class Main {
             Constants.mainMenuOutput();
 
             do {
-                System.out.print("Select entity between 0 - 4: ");
+                System.out.print("Select entity between 0 - 5: ");
                 selectedEntity = scanner.nextInt();
-            } while (selectedEntity < 0 || selectedEntity > 4);
+            } while (selectedEntity < 0 || selectedEntity > 5);
 
             switch (selectedEntity) {
                 case 1 -> {
@@ -111,20 +107,16 @@ public class Main {
                                 }
 
                                 MinerGroupEntity minerGroupEntity = null;
-                                Optional<MinerGroupEntity> minerGroupEntityOptional;
                                 do {
                                     System.out.print("Select miner group: ");
 
                                     long minerGroupId = scanner.nextLong();
-                                    minerGroupEntityOptional = minerGroupDAO.findById(minerGroupId);
+                                    minerGroupEntity = minerGroupService.findMinerGroupById(minerGroupId);
 
-                                    if (minerGroupEntityOptional.isPresent()) {
-                                        minerGroupEntity = minerGroupEntityOptional.get();
-                                    }
 
-                                } while (minerGroupEntityOptional.isEmpty());
+                                } while (minerGroupEntity == null);
 
-                                minerDAO.save(new MinerEntity()
+                                minerService.createMinerGroup(new MinerEntity()
                                         .setName(name)
                                         .setSurname(surname)
                                         .setSalary(salary)
@@ -138,13 +130,12 @@ public class Main {
                                 System.out.println("Enter miner id you want to change!");
                                 minerId = scanner.nextInt();
 
-                                Optional<MinerEntity> minerOptional = minerDAO.findById(minerId);
+                                MinerEntity miner = minerService.findMinerById(minerId);
 
-                                if (minerOptional.isEmpty()) {
+                                if (miner == null) {
                                     break;
                                 }
 
-                                MinerEntity miner = minerOptional.get();
                                 int changedField;
 
                                 do {
@@ -214,25 +205,21 @@ public class Main {
                                         }
                                         case 6 -> {
                                             MinerGroupEntity minerGroupEntity = null;
-                                            Optional<MinerGroupEntity> minerGroupEntityOptional;
 
                                             do {
                                                 System.out.print("Select miner group: ");
                                                 long minerGroupId = scanner.nextLong();
 
-                                                minerGroupEntityOptional = minerGroupDAO.findById(minerGroupId);
+                                                minerGroupEntity = minerGroupService.findMinerGroupById(minerGroupId);
 
-                                                if (minerGroupEntityOptional.isPresent()) {
-                                                    minerGroupEntity = minerGroupEntityOptional.get();
 
-                                                }
-                                            } while (minerGroupEntityOptional.isEmpty());
+                                            } while (minerGroupEntity == null);
 
                                             miner.setMinerGroup(minerGroupEntity);
                                         }
                                     }
                                 } while (changedField != 0);
-                                minerDAO.update(miner);
+                                minerService.createMinerGroup(miner);
                             }
                             case 3 -> {
                                 System.out.print("Enter miner ID for deletion:");
@@ -242,7 +229,7 @@ public class Main {
                                     minerId = scanner.nextLong();
                                 } while (minerId < 0 || minerId > 100000);
 
-                                minerDAO.delete(minerId);
+                                minerService.deleteMiner(minerId);
                             }
                             case 4 -> {
                                 long minerId;
@@ -251,17 +238,17 @@ public class Main {
                                     minerId = scanner.nextLong();
                                 } while (minerId < 0 || minerId > 100000);
 
-                                Optional<MinerEntity> miner = minerDAO.findById(minerId);
+                                MinerEntity miner = minerService.findMinerById(minerId);
 
-                                miner.ifPresent(System.out::println);
+                                System.out.println(miner);
                             }
                             case 5 -> {
-                                Optional<List<MinerEntity>> minerEntityList = minerDAO.findAll();
+                                List<MinerEntity> minerEntityList = minerService.findAllMinerGroups();
 
-                                if (minerEntityList.isPresent()) {
-                                    MinerEntity.toStringList(minerEntityList.get());
-                                } else {
+                                if (minerEntityList.isEmpty()) {
                                     log.warn("The miner table is empty!");
+                                } else {
+                                    MinerEntity.toStringList(minerEntityList);
                                 }
                             }
                         }
@@ -322,21 +309,16 @@ public class Main {
                                 }
 
                                 MinerGroupEntity minerGroupEntity = null;
-                                Optional<MinerGroupEntity> minerGroupEntityOptional;
 
                                 do {
                                     System.out.print("Select miner group: ");
                                     long minerGroupId = scanner.nextLong();
 
-                                    minerGroupEntityOptional = minerGroupDAO.findById(minerGroupId);
+                                    minerGroupEntity = minerGroupService.findMinerGroupById(minerGroupId);
 
-                                    if (minerGroupEntityOptional.isPresent()) {
-                                        minerGroupEntity = minerGroupEntityOptional.get();
+                                } while (minerGroupEntity == null);
 
-                                    }
-                                } while (minerGroupEntityOptional.isEmpty());
-
-                                orderDAO.save(new OrderEntity()
+                                orderService.createOrderGroup(new OrderEntity()
                                         .setPrice(price)
                                         .setQuantity(quantity)
                                         .setTypeOfOre(typeOfOre)
@@ -348,12 +330,11 @@ public class Main {
                                 System.out.println("Enter miner id you want to change!");
                                 orderId = scanner.nextInt();
 
-                                Optional<OrderEntity> orderOptional = orderDAO.findById(orderId);
-                                if (orderOptional.isEmpty()) {
+                                OrderEntity order = orderService.findOrderById(orderId);
+                                if (order == null) {
                                     break;
                                 }
 
-                                OrderEntity order = orderOptional.get();
                                 int changedField;
                                 do {
                                     Constants.orderChangeMenuOutput();
@@ -421,25 +402,20 @@ public class Main {
                                         }
                                         case 5 -> {
                                             MinerGroupEntity minerGroupEntity = null;
-                                            Optional<MinerGroupEntity> minerGroupEntityOptional;
 
                                             do {
                                                 System.out.print("Select miner group: ");
                                                 long minerGroupId = scanner.nextLong();
 
-                                                minerGroupEntityOptional = minerGroupDAO.findById(minerGroupId);
+                                                minerGroupEntity = minerGroupService.findMinerGroupById(minerGroupId);
 
-                                                if (minerGroupEntityOptional.isPresent()) {
-                                                    minerGroupEntity = minerGroupEntityOptional.get();
-                                                }
-
-                                            } while (minerGroupEntityOptional.isEmpty());
+                                            } while (minerGroupEntity == null);
                                             order.setMinerGroup(minerGroupEntity);
                                         }
                                     }
                                 } while (changedField != 0);
 
-                                orderDAO.update(order);
+                                orderService.updateOrderGroup(order);
                             }
                             case 3 -> {
                                 System.out.print("Enter order ID for deletion:");
@@ -449,7 +425,7 @@ public class Main {
                                     orderId = scanner.nextLong();
                                 } while (orderId < 0 || orderId > 100000);
 
-                                orderDAO.delete(orderId);
+                                orderService.deleteOrder(orderId);
                             }
                             case 4 -> {
                                 System.out.println("Select order ID:");
@@ -459,17 +435,17 @@ public class Main {
                                     orderId = scanner.nextLong();
                                 } while (orderId < 0 || orderId > 100000);
 
-                                Optional<OrderEntity> miner = orderDAO.findById(orderId);
+                                OrderEntity order = orderService.findOrderById(orderId);
 
-                                miner.ifPresent(System.out::println);
+                                System.out.println(order);
                             }
                             case 5 -> {
-                                Optional<List<OrderEntity>> orderList = orderDAO.findAll();
+                                List<OrderEntity> orderList = orderService.findAllOrderGroups();
 
-                                if (orderList.isPresent()) {
-                                    OrderEntity.toStringList(orderList.get());
-                                } else {
+                                if (orderList.isEmpty()) {
                                     log.warn("The miner table is empty!");
+                                } else {
+                                    OrderEntity.toStringList(orderList);
                                 }
                             }
                         }
@@ -505,7 +481,7 @@ public class Main {
                                     gold = scanner.nextInt();
                                 } while (gold < 0);
 
-                                stockDAO.save(
+                                stockService.createStockGroup(
                                         new StockEntity()
                                                 .setCoal(coal)
                                                 .setIron(iron)
@@ -517,13 +493,12 @@ public class Main {
                                 System.out.println("Enter stock id you want to change!");
 
                                 stockId = scanner.nextInt();
-                                Optional<StockEntity> stockOptional = stockDAO.findById(stockId);
+                                StockEntity stock = stockService.findStockById(stockId);
 
-                                if (stockOptional.isEmpty()) {
+                                if (stock == null) {
                                     break;
                                 }
 
-                                StockEntity stock = stockOptional.get();
                                 int changedField;
 
                                 do {
@@ -565,7 +540,7 @@ public class Main {
                                         }
                                     }
                                 } while (changedField != 0);
-                                stockDAO.update(stock);
+                                stockService.updateStockGroup(stock);
                             }
                             case 3 -> {
                                 System.out.print("Enter stock ID for deletion:");
@@ -575,7 +550,7 @@ public class Main {
                                     stockId = scanner.nextLong();
                                 } while (stockId < 0 || stockId > 100000);
 
-                                stockDAO.delete(stockId);
+                                stockService.deleteStock(stockId);
                             }
                             case 4 -> {
                                 System.out.println("Enter the Stock ID:");
@@ -585,23 +560,22 @@ public class Main {
                                     stockId = scanner.nextLong();
                                 } while (stockId < 0 || stockId > 100000);
 
-                                Optional<StockEntity> miner = stockDAO.findById(stockId);
+                                StockEntity stock = stockService.findStockById(stockId);
 
-                                miner.ifPresent(System.out::println);
+                                System.out.println(stock);
                             }
                             case 5 -> {
-                                Optional<List<StockEntity>> stockList = stockDAO.findAll();
+                                List<StockEntity> stockList = stockService.findAllStockGroups();
 
-                                if (stockList.isPresent()) {
-                                    StockEntity.toStringList(stockList.get());
-                                } else {
+                                if (stockList.isEmpty()) {
                                     log.warn("The stock table is empty!");
+                                } else {
+                                    StockEntity.toStringList(stockList);
                                 }
                             }
                         }
                     } while (selectedMethod != 0);
                 }
-
                 case 4 -> {
                     int selectedMethod;
                     do {
@@ -640,37 +614,28 @@ public class Main {
                                 }
 
                                 StockEntity stockEntity = null;
-                                Optional<StockEntity> stockEntityOptional;
 
                                 do {
                                     System.out.print("Select stock: ");
                                     long stockId = scanner.nextLong();
 
-                                    stockEntityOptional = stockDAO.findById(stockId);
+                                    stockEntity = stockService.findStockById(stockId);
 
-                                    if (stockEntityOptional.isPresent()) {
-                                        stockEntity = stockEntityOptional.get();
 
-                                    }
-                                } while (stockEntityOptional.isEmpty());
+                                } while (stockEntity == null);
 
 
                                 OrderEntity orderEntity = null;
-                                Optional<OrderEntity> orderEntityOptional;
 
                                 do {
                                     System.out.print("Select stock: ");
                                     long orderId = scanner.nextLong();
 
-                                    orderEntityOptional = orderDAO.findById(orderId);
+                                    orderEntity = orderService.findOrderById(orderId);
 
-                                    if (orderEntityOptional.isPresent()) {
-                                        orderEntity = orderEntityOptional.get();
+                                } while (orderEntity == null);
 
-                                    }
-                                } while (orderEntityOptional.isEmpty());
-
-                                minerGroupDAO.save(new MinerGroupEntity()
+                                minerGroupService.createMinerGroup(new MinerGroupEntity()
                                         .setName(minerGroupName)
                                         .setMineOre(mineOre)
                                         .setProductivity(productivity)
@@ -683,12 +648,10 @@ public class Main {
                                 System.out.println("Enter miner group id you want to change!");
                                 minerGroupId = scanner.nextInt();
 
-                                Optional<MinerGroupEntity> minerGroupEntityOptional = minerGroupDAO.findById(minerGroupId);
-                                if (minerGroupEntityOptional.isEmpty()) {
+                                MinerGroupEntity minerGroup = minerGroupService.findMinerGroupById(minerGroupId);
+                                if (minerGroup == null) {
                                     break;
                                 }
-
-                                MinerGroupEntity minerGroup = minerGroupEntityOptional.get();
 
                                 int changedField;
                                 do {
@@ -737,44 +700,36 @@ public class Main {
                                         case 4 -> {
 
                                             OrderEntity orderEntity = null;
-                                            Optional<OrderEntity> orderEntityOptional;
 
                                             do {
                                                 System.out.print("Select stock: ");
                                                 long orderId = scanner.nextLong();
 
-                                                orderEntityOptional = orderDAO.findById(orderId);
+                                                orderEntity = orderService.findOrderById(orderId);
 
-                                                if (orderEntityOptional.isPresent()) {
-                                                    orderEntity = orderEntityOptional.get();
-                                                }
 
-                                            } while (orderEntityOptional.isEmpty());
+                                            } while (orderEntity == null);
 
                                             minerGroup.setOrder(orderEntity);
                                         }
                                         case 5 -> {
 
                                             StockEntity stockEntity = null;
-                                            Optional<StockEntity> stockEntityOptional;
 
                                             do {
                                                 System.out.print("Select stock: ");
                                                 long stockId = scanner.nextLong();
 
-                                                stockEntityOptional = stockDAO.findById(stockId);
+                                                stockEntity = stockService.findStockById(stockId);
 
-                                                if (stockEntityOptional.isPresent()) {
-                                                    stockEntity = stockEntityOptional.get();
-                                                }
 
-                                            } while (stockEntityOptional.isEmpty());
+                                            } while (stockEntity == null);
 
                                             minerGroup.setStock(stockEntity);
                                         }
                                     }
                                 } while (changedField != 0);
-                                minerGroupDAO.update(minerGroup);
+                                minerGroupService.createMinerGroup(minerGroup);
                             }
                             case 3 -> {
                                 System.out.print("Enter miner group ID for deletion: ");
@@ -784,7 +739,7 @@ public class Main {
                                     minerGroupId = scanner.nextLong();
                                 } while (minerGroupId < 0 || minerGroupId > 100000);
 
-                                minerGroupDAO.delete(minerGroupId);
+                                minerGroupService.deleteMinerGroup(minerGroupId);
                             }
                             case 4 -> {
                                 long minerGroupId;
@@ -793,16 +748,16 @@ public class Main {
                                     minerGroupId = scanner.nextLong();
                                 } while (minerGroupId < 0 || minerGroupId > 100000);
 
-                                Optional<MinerGroupEntity> miner = minerGroupDAO.findById(minerGroupId);
+                                MinerGroupEntity minerGroup = minerGroupService.findMinerGroupById(minerGroupId);
 
-                                miner.ifPresent(System.out::println);
+                                System.out.println(minerGroup);
                             }
                             case 5 -> {
-                                Optional<List<MinerGroupEntity>> minerGroupList = minerGroupDAO.findAll();
-                                if (minerGroupList.isPresent()) {
-                                    MinerGroupEntity.toStringList(minerGroupList.get());
-                                } else {
+                                List<MinerGroupEntity> minerGroupList = minerGroupService.findAllMinerGroups();
+                                if (minerGroupList.isEmpty()) {
                                     log.warn("The miner table is empty!");
+                                } else {
+                                    MinerGroupEntity.toStringList(minerGroupList);
                                 }
                             }
                         }
